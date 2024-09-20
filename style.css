@@ -1,0 +1,36 @@
+*{
+    margin: 0px;
+    padding: 3px;
+    box-sizing: border-box;
+}
+body{
+    background: #f1eeee;
+}
+#qrcode, #nomes{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column
+}
+.dados{
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column
+}
+h1, h2{
+    text-align: center;
+}
+input, select, #generate {
+    padding: 6px;
+    margin-top: 10px;
+}
+.dados{
+    padding: 8px;
+}
+.qrcode{
+    text-align: center;
+}

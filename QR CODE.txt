@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>GERAR QR CODE</title>
+</head>
+<body>
+    <h1>GERAR QR CODE PARA VALIDAÇÃO DE PRESENÇA</h1>
+    
+    <div class="dados">
+        <label for="nome">Colaborador:</label>
+        <input type="text" id="nome" placeholder="Digite o nome...">
+    
+        <label for="cargo">Selecione o cargo:</label>
+        <select id="cargo">
+            <option value="Medico(a)">Médico(a)</option>
+            <option value="Enfermeiro(a)">Enfermeiro(a)</option>
+            <option value="Condutor">Condutor</option>
+            <option value="Tec. Enfermagem">Téc. Enfermagem</option>
+        </select>
+    
+        <button id="generate">Gerar QRCODE</button>
+    </div>
+
+    <div id="qrcode"></div>
+    
+<script>
+    document.getElementById('generate').addEventListener('click', function (){
+        const nome = document.getElementById('nome').value;
+        const cargo = document.getElementById('cargo').value;
+
+        if(nome && cargo){
+            document.getElementById("qrcode").innerHTML = "";
+
+            const qrcodeText = `Nome do colaborador: ${nome} || Cargo: ${cargo}`;
+            const qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: qrcodeText,
+                width: 150,
+                height: 150
+            });
+        }else {
+            alert('Por favor preencha os campos!');
+        }
+    });
+</script>
+</body>
+</html>

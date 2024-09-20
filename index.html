@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <title>GERAR QR CODE</title>
+</head>
+<body>
+    <div>
+        <img src="/iconx.png" alt="" style="width: 120px;">
+        <img src="/Samu-logo.png" alt="" style="width: 120px; float: right;">
+        <h1>GERAR QR CODE PARA VALIDAÇÃO DE PRESENÇA</h1>
+        <h2>BASES SAMU</h2>
+    </div>
+    
+    <div class="dados">
+        <label for="nome">Colaborador:</label>
+        <input type="text" id="nome" placeholder="Digite o nome...">
+    
+        <label for="cargo">Selecione o cargo:</label>
+        <select id="cargo">
+            <option value="Medico(a)">Médico(a)</option>
+            <option value="Enfermeiro(a)">Enfermeiro(a)</option>
+            <option value="Condutor">Condutor</option>
+            <option value="Tec. Enfermagem">Téc. Enfermagem</option>
+        </select><br>   
+        <button id="generate">Gerar QRCODE</button><br><br>
+        <button id="sendWhatsapp">Enviar via WhatsApp</button>
+
+        <div id="qrcode"></div>
+        <br>
+        <div id="nomes"></div>
+    </div>
+
+<script>
+    let qrCodeElement;
+
+    document.getElementById('generate').addEventListener('click', function (){
+        const nome = document.getElementById('nome').value;
+        const cargo = document.getElementById('cargo').value;
+
+        if(nome && cargo){
+            document.getElementById("qrcode").innerHTML = "";
+            document.getElementById("nomes").innerHTML = `Nome do colaborador: ${nome} || Cargo: ${cargo}`;
+
+            const qrcodeText = `Nome do colaborador: ${nome} || Cargo: ${cargo}`;
+            qrCodeElement = new QRCode(document.getElementById("qrcode"), {
+                text: qrcodeText,
+                width: 150,
+                height: 150
+            });
+        } else {
+            alert('Por favor preencha os campos!');
+        }
+    });
+
+     // Função para gerar QR Code sem fundo e enquadrar perfeitamente
+    document.getElementById('sendWhatsapp').addEventListener('click', function() {
+        html2canvas(document.getElementById('qrcode'), {
+            backgroundColor: null, // Define o fundo como transparente
+            useCORS: true // Permite carregar imagens de servidores externos
+        }).then(function(canvas) {
+            // Cortar a imagem para remover qualquer espaço extra ao redor do QR Code
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            const qrContext = qrCanvas.getContext('2d');
+            const qrData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+
+            // Obter os limites do QR Code (remover áreas em branco)
+            const trimmedCanvas = document.createElement('canvas');
+            const trimmedContext = trimmedCanvas.getContext('2d');
+            trimmedCanvas.width = qrCanvas.width;
+            trimmedCanvas.height = qrCanvas.height;
+
+            trimmedContext.putImageData(qrData, 0, 0);
+
+            // Gerar o link da imagem como JPEG sem bordas
+            const imgData = trimmedCanvas.toDataURL('image/jpeg');
+
+            // Criar um link WhatsApp com mensagem e imagem
+            const nome = document.getElementById('nome').value;
+            const cargo = document.getElementById('cargo').value;
+            const mensagem = `Olá, segue o QR Code gerado para confirmar presença do colaborador ${nome}, cargo: ${cargo}.`;
+
+            // Codificar a mensagem
+            const encodedMessage = encodeURIComponent(mensagem);
+            const whatsappLink = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+
+            // Criar um link de download temporário para a imagem
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imgData;
+            downloadLink.download = 'qrcode.jpg'; // Nome do arquivo a ser baixado
+            document.body.appendChild(downloadLink);
+            downloadLink.click(); // Simula o clique para download
+            document.body.removeChild(downloadLink); // Remove o link após o uso
+
+            // Abre o WhatsApp com a mensagem gerada
+            window.open(whatsappLink, '_blank');
+        });
+    });
+</script>
+</body>
+</html>
